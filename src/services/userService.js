@@ -35,6 +35,16 @@ async function getUserByEmail(email) {
     )
   }
 }
+async function getUserByRefreshToken(refreshToken) {
+  try {
+    return (await User.findOne({ where: { refreshToken } }))?.dataValues
+  } catch (error) {
+    throw new Error(
+      `Error while retrieving user with refreshToken='${refreshToken}': ` +
+        error.message
+    )
+  }
+}
 
 async function deleteUserById(id) {
   try {
@@ -81,6 +91,7 @@ module.exports = {
   getAllUsers,
   getUserById,
   getUserByEmail,
+  getUserByRefreshToken,
   deleteUserById,
   deleteUserByEmail,
   updateUserById,

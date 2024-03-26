@@ -1,10 +1,27 @@
 const userService = require('../services/userService')
+const bcrypt = require('bcrypt')
 
-//use instead register function from loginController
 const createUser = async (req, res) => {
   try {
-    await userService.createUser(req.body)
-    res.sendStatus(201)
+    const { role, firstName, lastName, email, password } = req.body
+    if (!role || !firstName || !lastName || !email || !password) {
+      return res.status(400).json({ message: 'Missing required information' })
+    }
+    const duplicate = await userService.getUserByEmail(email)
+    if (duplicate) {
+      return res
+        .status(409)
+        .json({ message: `User with email='${email}' already exists.` })
+    }
+    const newUser = await userService.createUser({
+      ...req.body,
+      firstName,
+      lastName,
+      email,
+      password: await bcrypt.hash(password, 10),
+      role,
+    })
+    res.status(201).json(newUser)
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
@@ -51,10 +68,10 @@ const getUserByEmail = async (req, res) => {
 
 const updateUserById = async (req, res) => {
   try {
-    const updateResult = await userService.updateUserById(
-      req.params.id,
-      req.body
-    )
+    const updateResult = await userService.updateUserById(req.params.id, {
+      ...req.body,
+      password: await bcrypt.hash(req.body.password, 10),
+    })
     if (updateResult && updateResult != 0) {
       res.status(204).json(updateResult)
     } else {
@@ -68,10 +85,10 @@ const updateUserById = async (req, res) => {
 }
 const updateUserByEmail = async (req, res) => {
   try {
-    const updateResult = await userService.updateUserByEmail(
-      req.query.email,
-      req.body
-    )
+    const updateResult = await userService.updateUserByEmail(req.query.email, {
+      ...req.body,
+      password: await bcrypt.hash(req.body.password, 10),
+    })
     if (updateResult && updateResult != 0) {
       res.status(204).json(updateResult)
     } else {
