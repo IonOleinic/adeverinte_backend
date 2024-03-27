@@ -6,10 +6,14 @@ const corsOptions = require('../../config/corsOptions')
 
 const verifyJWT = require('../middleware/verifyJWT')
 const credentials = require('../middleware/credentials')
+const ROLES_LIST = require('../../config/rolesList')
+const verifyRoles = require('../middleware/verifyRoles')
 
 const tokenRoutes = require('../routes/tokenRoutes')
 const authRoutes = require('../routes/authRoutes')
 const userRoutes = require('../routes/userRoutes')
+const rolesRoutes = require('../routes/rolesRoutes')
+
 const studentRoutes = require('../routes/studentRoutes')
 const facultyRoutes = require('../routes/facultyRoutes')
 const certificateRequestRoutes = require('../routes/certificateRequestRoutes')
@@ -25,12 +29,17 @@ expressServer.use(cookieParser())
 expressServer.use('/', authRoutes)
 expressServer.use('/', tokenRoutes)
 
+//routes for sectretary and admin
 expressServer.use(verifyJWT)
-expressServer.use('/', userRoutes)
 expressServer.use('/', studentRoutes)
-expressServer.use('/', facultyRoutes)
-expressServer.use('/', certificateRequestRoutes)
-expressServer.use('/', certificateOptionsRoutes)
 expressServer.use('/', certificateRoutes)
+expressServer.use('/', certificateRequestRoutes)
+
+//routes only for admin
+expressServer.use(verifyRoles(ROLES_LIST.Admin))
+expressServer.use('/', rolesRoutes)
+expressServer.use('/', userRoutes)
+expressServer.use('/', facultyRoutes)
+expressServer.use('/', certificateOptionsRoutes)
 
 module.exports = expressServer

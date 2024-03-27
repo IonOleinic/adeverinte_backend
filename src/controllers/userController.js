@@ -3,8 +3,8 @@ const bcrypt = require('bcrypt')
 
 const createUser = async (req, res) => {
   try {
-    const { role, firstName, lastName, email, password } = req.body
-    if (!role || !firstName || !lastName || !email || !password) {
+    const { roles, firstName, lastName, email, password } = req.body
+    if (!roles || !firstName || !lastName || !email || !password) {
       return res.status(400).json({ message: 'Missing required information' })
     }
     const duplicate = await userService.getUserByEmail(email)
@@ -19,7 +19,7 @@ const createUser = async (req, res) => {
       lastName,
       email,
       password: await bcrypt.hash(password, 10),
-      role,
+      roles,
     })
     res.status(201).json(newUser)
   } catch (error) {
