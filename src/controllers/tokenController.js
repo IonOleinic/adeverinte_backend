@@ -14,10 +14,11 @@ const handleRefreshToken = async (req, res) => {
     if (!foundUser) {
       return res.status(403).json({ message: 'Invalid refresh token' })
     }
+
     jwt.verify(
       refreshToken,
       process.env.REFRESH_TOKEN_SECRET || 'refresh',
-      (error, decoded) => {
+      async (error, decoded) => {
         if (error || decoded.UserInfo?.email !== foundUser.email) {
           return res.status(403).json({
             message: 'Invalid refresh token or refresh token has expired.',

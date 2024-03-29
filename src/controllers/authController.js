@@ -26,7 +26,8 @@ const handleLogin = async (req, res) => {
       process.env.REFRESH_TOKEN_SECRET || 'refresh',
       { expiresIn: process.env.ACCESS_TOKEN_LIFE || '1d' }
     )
-    await userService.updateUserByEmail(email, { ...foundUser, refreshToken })
+    foundUser.refreshToken = refreshToken
+    await userService.updateUserByEmail(email, foundUser)
     res.cookie('jwt', refreshToken, {
       httpOnly: true,
       maxAge: 20 * 60 * 1000, // 20 minutes
@@ -46,15 +47,12 @@ const handleLogout = async (req, res) => {
     const foundUser = await userService.getUserByRefreshToken(refreshToken)
     res.clearCookie('jwt', {
       httpOnly: true,
-      maxAge: 20 * 60 * 1000, // 20 minutes
     })
     if (!foundUser) {
       return res.sendStatus(204)
     }
-    await userService.updateUserById(foundUser.id, {
-      ...foundUser,
-      refreshToken: null,
-    })
+    foundUser.refreshToken = null
+    await userService.updateUserById(foundUser.id, foundUser)
     return res.sendStatus(204)
   } catch (error) {
     res.status(500).json({ message: error.message })

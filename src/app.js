@@ -5,7 +5,7 @@ const SERVER_PORT = process.env.SERVER_PORT || 5000
 
 db.sync().then(async () => {
   console.log('Database connected')
-  server.listen(SERVER_PORT, () => {
+  server.listen(SERVER_PORT, async () => {
     console.log(`Server listening on port ${SERVER_PORT}...`)
   })
 })

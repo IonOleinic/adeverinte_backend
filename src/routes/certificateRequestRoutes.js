@@ -5,6 +5,10 @@ certificateRequestRoutes.post(
   '/certificate-request',
   certificateRequestController.createCertificateRequest
 )
+certificateRequestRoutes.post(
+  '/load-certificate-requests-from-spreadsheet',
+  certificateRequestController.loadCertificateRequestsFromSpreadSheet
+)
 
 certificateRequestRoutes.get(
   '/all-certificate-requests',
@@ -29,6 +33,17 @@ certificateRequestRoutes.put(
 certificateRequestRoutes.delete(
   '/certificate-request/:id',
   certificateRequestController.deleteCertificateRequestById
+)
+
+//spreadsheet routes
+certificateRequestRoutes.get(
+  '/spreadsheet',
+  certificateRequestController.getSpreadsheet
+)
+
+certificateRequestRoutes.put(
+  '/spreadsheet',
+  certificateRequestController.updateSpreadsheet
 )
 
 module.exports = certificateRequestRoutes

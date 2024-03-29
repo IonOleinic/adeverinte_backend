@@ -1,9 +1,46 @@
 const certificateRequestService = require('../services/certificateRequestService')
+const spreadsheetService = require('../services/spreadsheetService')
 
 const createCertificateRequest = async (req, res) => {
   try {
     await certificateRequestService.createCertificateRequest(req.body)
     res.sendStatus(201)
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+
+const loadCertificateRequestsFromSpreadSheet = async (req, res) => {
+  try {
+    const unprocessedRequests =
+      await spreadsheetService.getUnprocessedCertificateRequests()
+
+    await unprocessedRequests.forEach(async (request) => {
+      try {
+        await certificateRequestService.createCertificateRequest(request)
+      } catch (error) {
+        //posible error: duplicate certificate request
+      }
+    })
+    const allCertificateRequests =
+      await certificateRequestService.getAllCertificateRequests()
+    const unhandledRequests = allCertificateRequests.filter(
+      (request) => request.handledBy === null || request.accepted === null
+    )
+    res.json(unhandledRequests)
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+
+const getUnhandledCertificateRequests = async (req, res) => {
+  try {
+    const certificateRequests =
+      await certificateRequestService.getAllCertificateRequests()
+    const filteredRequests = certificateRequests.filter(
+      (request) => request.handledBy === null || request.accepted === null
+    )
+    res.json(filteredRequests)
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
@@ -86,11 +123,33 @@ const deleteCertificateRequestById = async (req, res) => {
   }
 }
 
+const getSpreadsheet = async (req, res) => {
+  try {
+    const spreadsheet = await spreadsheetService.getSpreadsheet()
+    res.json(spreadsheet)
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+
+const updateSpreadsheet = async (req, res) => {
+  try {
+    await spreadsheetService.updateSpreadsheet(req.body)
+    res.sendStatus(204)
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+
 module.exports = {
   createCertificateRequest,
+  loadCertificateRequestsFromSpreadSheet,
   getAllCertificateRequests,
   getCertificateRequestById,
   getCertificateRequestsByStudentEmail,
   updateCertificateRequestById,
+  getUnhandledCertificateRequests,
   deleteCertificateRequestById,
+  getSpreadsheet,
+  updateSpreadsheet,
 }

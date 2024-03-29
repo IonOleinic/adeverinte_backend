@@ -30,6 +30,16 @@ async function getCertificateRequestById(id) {
     )
   }
 }
+async function getCertificateRequestByDate(date) {
+  try {
+    return (await CertificateRequest.findOne({ where: { date } }))?.dataValues
+  } catch (error) {
+    throw new Error(
+      `Error while retrieving certificate request with date='${date}': ` +
+        error.message
+    )
+  }
+}
 
 async function getCertificateRequestsByStudentEmail(studentEmail) {
   try {
@@ -73,6 +83,7 @@ module.exports = {
   createCertificateRequest,
   getAllCertificateRequests,
   getCertificateRequestById,
+  getCertificateRequestByDate,
   getCertificateRequestsByStudentEmail,
   updateCertificateRequestById,
   deleteCertificateRequestById,

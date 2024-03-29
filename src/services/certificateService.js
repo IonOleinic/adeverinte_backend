@@ -1,8 +1,17 @@
-const { Certificate, Student } = require('../../models')
+const { Certificate } = require('../../models')
+const studentService = require('./studentService')
 const certificateOptionsService = require('./certificateOptionsService')
 
 async function createCertificate(certificateData) {
   try {
+    // Check if student exists
+    const student = await studentService.getStudentByEmail(
+      certificateData.studentEmail
+    )
+    if (!student)
+      throw new Error(
+        `Student with email='${certificateData.studentEmail}' does not exist in database.`
+      )
     if (!certificateData.registrationNr) {
       certificateData.registrationNr = await generateRegistrationNumber()
       if (!certificateData.registrationNr)
@@ -10,7 +19,8 @@ async function createCertificate(certificateData) {
           'Registration number cannot be generated. Please verify certificate options. If it is the first time, please create certificate options first.'
         )
     }
-    return await Certificate.create(certificateData)
+
+    return await Certificate.create({ ...certificateData, ...student })
   } catch (error) {
     throw new Error('Error while creating certificate: ' + error.message)
   }
@@ -18,26 +28,7 @@ async function createCertificate(certificateData) {
 
 async function getAllCertificates() {
   try {
-    const allData = await Certificate.findAll({
-      include: [{ model: Student, as: 'student' }],
-    })
-    const allCertificates = allData.map((data) => {
-      data = data.dataValues
-      data.student = data.student.dataValues
-      return {
-        registrationNr: data.registrationNr,
-        createdAt: data.createdAt,
-        studentFullName: data.student?.fullName,
-        studyProgram: data.student?.studyProgram,
-        studyDomain: data.student?.studyDomain,
-        educationForm: data.student?.educationForm,
-        studyCycle: data.student?.studyCycle,
-        studyYear: data.student?.studyYear,
-        financing: data.student?.financing,
-        certificatePurpose: data.certificatePurpose,
-      }
-    })
-    return allCertificates
+    return (await Certificate.findAll()).map((data) => data.dataValues)
   } catch (error) {
     throw new Error('Error while retrieving all certificates: ' + error.message)
   }
@@ -45,25 +36,12 @@ async function getAllCertificates() {
 
 async function getCertificateByRegistrationNr(registrationNr) {
   try {
-    const data = (
+    const certificate = (
       await Certificate.findOne({
         where: { registrationNr },
-        include: [{ model: Student, as: 'student' }],
       })
     )?.dataValues
-    if (!data) return null
-    return {
-      registrationNr: data.registrationNr,
-      createdAt: data.createdAt,
-      studentFullName: data.student?.fullName,
-      studyProgram: data.student?.studyProgram,
-      studyDomain: data.student?.studyDomain,
-      educationForm: data.student?.educationForm,
-      studyCycle: data.student?.studyCycle,
-      studyYear: data.student?.studyYear,
-      financing: data.student?.financing,
-      certificatePurpose: data.certificatePurpose,
-    }
+    return certificate
   } catch (error) {
     throw new Error(
       `Error while retrieving certificate with registrationNr='${registrationNr}': ` +
@@ -74,27 +52,11 @@ async function getCertificateByRegistrationNr(registrationNr) {
 
 async function getStudentCertificates(studentEmail) {
   try {
-    const allData = await Certificate.findAll({
-      where: { studentEmail },
-      include: [{ model: Student, as: 'student' }],
-    })
-    const allCertificates = allData.map((data) => {
-      data = data.dataValues
-      data.student = data.student.dataValues
-      return {
-        registrationNr: data.registrationNr,
-        createdAt: data.createdAt,
-        studentFullName: data.student?.fullName,
-        studyProgram: data.student?.studyProgram,
-        studyDomain: data.student?.studyDomain,
-        educationForm: data.student?.educationForm,
-        studyCycle: data.student?.studyCycle,
-        studyYear: data.student?.studyYear,
-        financing: data.student?.financing,
-        certificatePurpose: data.certificatePurpose,
-      }
-    })
-    return allCertificates
+    return (
+      await Certificate.findAll({
+        where: { studentEmail },
+      })
+    ).map((data) => data.dataValues)
   } catch (error) {
     throw new Error(
       `Error while retrieving certificates for student with email='${studentEmail}'` +
