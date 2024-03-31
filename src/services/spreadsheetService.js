@@ -39,13 +39,15 @@ async function getAllCertificateRequests() {
     const sheet = await loadGooglespreadsheet()
     const rows = await sheet.getRows()
     return rows.map((row) => {
-      const [datePart, timePart] = row._rawData[0].split(' ')
-      const [day, month, year] = datePart.split('.')
-      const [hour, minute, second] = timePart.split(':')
-      return {
-        date: new Date(Date.UTC(year, month - 1, day, hour, minute, second)),
-        studentEmail: row._rawData[1],
-        certificatePurpose: row._rawData[2].trim(),
+      if (row._rawData[0] && row._rawData[1] && row._rawData[2]) {
+        const [datePart, timePart] = row._rawData[0].split(' ')
+        const [day, month, year] = datePart.split('.')
+        const [hour, minute, second] = timePart.split(':')
+        return {
+          date: new Date(Date.UTC(year, month - 1, day, hour, minute, second)),
+          studentEmail: row._rawData[1],
+          certificatePurpose: row._rawData[2].trim(),
+        }
       }
     })
   } catch (error) {

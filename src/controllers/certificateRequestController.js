@@ -92,7 +92,7 @@ const updateCertificateRequestById = async (req, res) => {
         req.body
       )
     if (updateResult && updateResult != 0) {
-      res.status(204).json(updateResult)
+      res.sendStatus(204)
     } else {
       res.status(404).json({
         message: `Certificate request with id='${req.params.id}' doesn't exist`,
@@ -110,9 +110,7 @@ const deleteCertificateRequestById = async (req, res) => {
         req.params.id
       )
     if (deleteResult) {
-      res.status(204).json({
-        message: `Certificate request with id='${req.params.id}' deleted successfully`,
-      })
+      res.sendStatus(204)
     } else {
       res.status(404).json({
         message: `Certificate request with id='${req.params.id}' doesn't exist`,

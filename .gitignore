@@ -15,3 +15,5 @@ node_modules/
 
 # Ignore compiled TypeScript files
 /dist/
+
+*.db
