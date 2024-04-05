@@ -3,6 +3,16 @@ const studentService = require('../services/studentService')
 
 const createCertificate = async (req, res) => {
   try {
+    // Check if student exists
+    const student = await studentService.getStudentByEmail(
+      req.body.studentEmail
+    )
+    if (!student) {
+      res.status(404).json({
+        message: `Student with email='${req.body.studentEmail}' does not exist in database.`,
+      })
+      return
+    }
     //check if certificate with registration nr already exists
     if (
       req.body.registrationNr &&

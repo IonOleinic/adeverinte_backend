@@ -2,15 +2,34 @@ const studentService = require('../services/studentService')
 
 const createStudent = async (req, res) => {
   try {
-    //check if student already exists
-    if ((await studentService.getStudentByEmail(req.body.email)) != null) {
-      res.status(409).json({
-        message: `Student with email='${req.body.email}' already exists`,
-      })
+    let failedStudents = []
+    if (Array.isArray(req.body)) {
+      await studentService.deleteAllStudents()
+      for (let i = 0; i < req.body.length; i++) {
+        //try add student
+        try {
+          await studentService.createStudent(req.body[i])
+        } catch (error) {
+          failedStudents.push({ student: req.body[i], message: error.message })
+        }
+      }
+      if (failedStudents.length > 0) {
+        res.status(201).json({ failedStudents })
+      } else {
+        res.sendStatus(201)
+      }
       return
+    } else {
+      //check if student already exists
+      if ((await studentService.getStudentByEmail(req.body.email)) != null) {
+        res.status(409).json({
+          message: `Student with email='${req.body.email}' already exists`,
+        })
+        return
+      }
+      await studentService.createStudent(req.body)
+      res.sendStatus(201)
     }
-    await studentService.createStudent(req.body)
-    res.sendStatus(201)
   } catch (error) {
     res.status(500).json({ message: error.message })
   }

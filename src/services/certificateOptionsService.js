@@ -10,6 +10,18 @@ async function createCertificateOptions(certificateOptionsData) {
   }
 }
 
+async function getLastUsedMask() {
+  try {
+    return (
+      await CertificateOptions.findOne({
+        order: [['date', 'DESC']],
+      })
+    )?.mask
+  } catch (error) {
+    throw new Error('Error while retrieving last used mask: ' + error.message)
+  }
+}
+
 async function getAllCertificateOptions() {
   try {
     return (await CertificateOptions.findAll()).map((data) => data.dataValues)
@@ -65,4 +77,5 @@ module.exports = {
   getCertificateOptionsByDate,
   updateCertificateOptionsByDate,
   deleteCertificateOptionsByDate,
+  getLastUsedMask,
 }

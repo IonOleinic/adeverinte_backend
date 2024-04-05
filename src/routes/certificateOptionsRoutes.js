@@ -12,6 +12,11 @@ certificateOptionsRoutes.get(
 )
 
 certificateOptionsRoutes.get(
+  '/last-used-mask',
+  certificateOptionsController.getLastUsedMask
+)
+
+certificateOptionsRoutes.get(
   '/certificate-options',
   certificateOptionsController.getCertificateOptionsByDate
 )

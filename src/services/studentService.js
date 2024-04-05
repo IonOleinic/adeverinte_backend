@@ -4,7 +4,6 @@ async function createStudent(studentData) {
   try {
     return await Student.create(studentData)
   } catch (error) {
-    console.log(error)
     throw new Error('Error while creating student: ' + error.message)
   }
 }
@@ -29,10 +28,32 @@ async function getStudentByEmail(email) {
 
 async function getStudentById(id) {
   try {
+    id = Number(id)
     return (await Student.findOne({ where: { id } }))?.dataValues
   } catch (error) {
     throw new Error(
       `Error while retrieving student with id='${id}': ` + error.message
+    )
+  }
+}
+
+async function updateStudentByEmail(email, studentData) {
+  try {
+    return await Student.update(studentData, { where: { email } })
+  } catch (error) {
+    throw new Error(
+      `Error while updating student with email='${email}': ` + error.message
+    )
+  }
+}
+
+async function updateStudentById(id, studentData) {
+  try {
+    id = Number(id)
+    return await Student.update(studentData, { where: { id } })
+  } catch (error) {
+    throw new Error(
+      `Error while updating student with id='${id}': ` + error.message
     )
   }
 }
@@ -57,23 +78,11 @@ async function deleteStudentById(id) {
   }
 }
 
-async function updateStudentByEmail(email, studentData) {
+async function deleteAllStudents() {
   try {
-    return await Student.update(studentData, { where: { email } })
+    return await Student.destroy({ where: {} })
   } catch (error) {
-    throw new Error(
-      `Error while updating student with email='${email}': ` + error.message
-    )
-  }
-}
-
-async function updateStudentById(id, studentData) {
-  try {
-    return await Student.update(studentData, { where: { id } })
-  } catch (error) {
-    throw new Error(
-      `Error while updating student with id='${id}': ` + error.message
-    )
+    throw new Error(`Error while deleting all students: ` + error.message)
   }
 }
 
@@ -86,4 +95,5 @@ module.exports = {
   deleteStudentById,
   updateStudentByEmail,
   updateStudentById,
+  deleteAllStudents,
 }
