@@ -118,6 +118,7 @@ async function generateRegistrationNumber() {
     .join('.')
   return certOpt.mask
     .replace('i', certOpt.dailyCount)
+    .replace('NR', certOpt.NR)
     .replace('[data]', formattedDate)
 }
 

@@ -33,12 +33,24 @@ const loadCertificateRequestsFromSpreadSheet = async (req, res) => {
   }
 }
 
-const getUnhandledCertificateRequests = async (req, res) => {
+const getUnprocessedCertificateRequests = async (req, res) => {
   try {
     const certificateRequests =
       await certificateRequestService.getAllCertificateRequests()
     const filteredRequests = certificateRequests.filter(
       (request) => request.handledBy === null || request.accepted === null
+    )
+    res.json(filteredRequests)
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+const getProcessedCertificateRequests = async (req, res) => {
+  try {
+    const certificateRequests =
+      await certificateRequestService.getAllCertificateRequests()
+    const filteredRequests = certificateRequests.filter(
+      (request) => request.handledBy != null || request.accepted != null
     )
     res.json(filteredRequests)
   } catch (error) {
@@ -146,7 +158,8 @@ module.exports = {
   getCertificateRequestById,
   getCertificateRequestsByStudentEmail,
   updateCertificateRequestById,
-  getUnhandledCertificateRequests,
+  getUnprocessedCertificateRequests,
+  getProcessedCertificateRequests,
   deleteCertificateRequestById,
   getSpreadsheet,
   updateSpreadsheet,

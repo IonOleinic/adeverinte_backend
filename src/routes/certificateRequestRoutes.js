@@ -5,14 +5,25 @@ certificateRequestRoutes.post(
   '/certificate-request',
   certificateRequestController.createCertificateRequest
 )
-certificateRequestRoutes.post(
-  '/load-certificate-requests-from-spreadsheet',
-  certificateRequestController.loadCertificateRequestsFromSpreadSheet
-)
 
 certificateRequestRoutes.get(
   '/all-certificate-requests',
   certificateRequestController.getAllCertificateRequests
+)
+
+certificateRequestRoutes.get(
+  '/pending-certificate-requests',
+  certificateRequestController.getUnprocessedCertificateRequests
+)
+
+certificateRequestRoutes.get(
+  '/processed-certificate-requests',
+  certificateRequestController.getProcessedCertificateRequests
+)
+
+certificateRequestRoutes.get(
+  '/load-certificate-requests-from-spreadsheet',
+  certificateRequestController.loadCertificateRequestsFromSpreadSheet
 )
 
 certificateRequestRoutes.get(
