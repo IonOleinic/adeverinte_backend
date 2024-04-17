@@ -2,6 +2,7 @@ const { GoogleSpreadsheet } = require('google-spreadsheet')
 const creds = require('../../config/serviceAccountCreds.json')
 const { JWT } = require('google-auth-library')
 const { Spreadsheet } = require('../../models')
+const { sleep } = require('../utils/utils')
 
 const serviceAccountAuth = new JWT({
   email: creds.client_email,
@@ -10,7 +11,7 @@ const serviceAccountAuth = new JWT({
 })
 const GOOGLE_SPREADSHEET_ID =
   process.env.GOOGLE_SPREADSHEET_ID ||
-  '1LVubIuhZGUrwlj2pB6nuq8W1B-34rhNzI43B30AQY80'
+  '1gyAbPu4r1SlNF0-Zdd_d3s73RMzQxPCynIHFwJmmBWU'
 
 async function loadGooglespreadsheet() {
   try {
@@ -26,6 +27,15 @@ async function loadGooglespreadsheet() {
     )
     await doc.loadInfo()
     const sheet = doc.sheetsByIndex[0]
+    await sheet.loadHeaderRow()
+    if (!sheet._headerValues.includes('Citit')) {
+      await sheet.setHeaderRow([
+        'Marcaj de timp',
+        'Adresă de e-mail',
+        'Scopul adeverintei',
+        'Citit',
+      ])
+    }
     return sheet
   } catch (error) {
     throw new Error(
@@ -38,18 +48,31 @@ async function getAllCertificateRequests() {
   try {
     const sheet = await loadGooglespreadsheet()
     const rows = await sheet.getRows()
-    return rows.map((row) => {
-      if (row._rawData[0] && row._rawData[1] && row._rawData[2]) {
-        const [datePart, timePart] = row._rawData[0].split(' ')
-        const [day, month, year] = datePart.split('.')
-        const [hour, minute, second] = timePart.split(':')
-        return {
-          date: new Date(Date.UTC(year, month - 1, day, hour, minute, second)),
-          studentEmail: row._rawData[1],
-          certificatePurpose: row._rawData[2].trim(),
+    let rowsToBeMarked = []
+
+    const certificateRequests = Promise.all(
+      rows.map(async (row) => {
+        if (row._rawData[0] && row._rawData[1] && row._rawData[2]) {
+          if (row._rawData[3] === 'X') {
+            return null
+          }
+          const [datePart, timePart] = row._rawData[0].split(' ')
+          const [day, month, year] = datePart.split('.')
+          const [hour, minute, second] = timePart.split(':')
+          rowsToBeMarked.push(row)
+          return {
+            date: new Date(
+              Date.UTC(year, month - 1, day, hour, minute, second)
+            ),
+            studentEmail: row._rawData[1],
+            certificatePurpose: row._rawData[2].trim(),
+          }
         }
-      }
-    })
+      })
+    )
+
+    markRowsAsReaded(rowsToBeMarked)
+    return certificateRequests
   } catch (error) {
     throw new Error(
       `Error during retrieving all certificate requests from google spread sheet document: ` +
@@ -58,19 +81,51 @@ async function getAllCertificateRequests() {
   }
 }
 
+async function markRowsAsReaded(rows) {
+  if (rows.length === 0) return
+  // If there are more than 60 rows, split them into batches
+  if (rows.length >= 60) {
+    const batchSize = 60
+    for (let i = 0; i < rows.length; i += batchSize) {
+      const batch = rows.slice(i, i + batchSize)
+      console.log(i, i + batchSize)
+      await markBatchAsReaded(batch)
+      // Sleep for a short duration between batches to stay within the quota
+      await sleep(2000) // Adjust the sleep duration as needed
+    }
+  } else {
+    await markBatchAsReaded(rows)
+  }
+}
+
+async function markBatchAsReaded(rows) {
+  for (const row of rows) {
+    try {
+      if (row._rawData[3] === 'X') continue // Skip rows that are already marked as read
+      row._rawData = [...row._rawData, 'X']
+      await row.save()
+    } catch (error) {
+      console.log(error.message)
+      await sleep(10000) // Sleep for a short duration to stay within the quota
+    }
+  }
+}
+
 async function getUnprocessedCertificateRequests() {
   const allCertificateRequests = await getAllCertificateRequests()
-  const lastProcessedRow = await getLastProcessedRow()
-  if (lastProcessedRow > allCertificateRequests.length) {
-    //there something was bad. Set lastProcessedRow to last processed row from sheet
-    await updateLastProcessedRow(allCertificateRequests.length)
-    return allCertificateRequests
-  }
-  const unprocessedRequests = allCertificateRequests.slice(lastProcessedRow)
-  if (unprocessedRequests.length !== 0)
-    await updateLastProcessedRow(lastProcessedRow + unprocessedRequests.length)
+  // const lastProcessedRow = await getLastProcessedRow()
+  // const lastProcessedRow = 0
+  // if (lastProcessedRow > allCertificateRequests.length) {
+  //   //there something was bad. Set lastProcessedRow to last processed row from sheet
+  //   await updateLastProcessedRow(allCertificateRequests.length)
+  //   return allCertificateRequests
+  // }
+  // const unprocessedRequests = allCertificateRequests.slice(lastProcessedRow)
+  // if (unprocessedRequests.length !== 0)
+  //   await updateLastProcessedRow(lastProcessedRow + unprocessedRequests.length)
 
-  return unprocessedRequests
+  // return unprocessedRequests
+  return allCertificateRequests
 }
 
 async function getCertificateRequestsByStudentEmail(studentEmail) {

@@ -30,7 +30,7 @@ expressServer.use('/', authRoutes)
 expressServer.use('/', tokenRoutes)
 
 //routes for sectretary and admin
-// expressServer.use(verifyJWT)
+expressServer.use(verifyJWT)
 expressServer.use('/', studentRoutes)
 expressServer.use('/', certificateRoutes)
 expressServer.use('/', certificateRequestRoutes)

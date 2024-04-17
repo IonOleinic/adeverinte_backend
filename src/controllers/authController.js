@@ -1,6 +1,7 @@
 const userService = require('../services/userService')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const ROLES_LIST = require('../../config/rolesList')
 
 const handleLogin = async (req, res) => {
   try {
@@ -32,7 +33,7 @@ const handleLogin = async (req, res) => {
       httpOnly: true,
       maxAge: 20 * 60 * 1000, // 20 minutes
     })
-    res.json({ accessToken })
+    res.json({ accessToken, roles: foundUser.roles })
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
@@ -59,4 +60,12 @@ const handleLogout = async (req, res) => {
   }
 }
 
-module.exports = { handleLogin, handleLogout }
+const getAllRoles = async (req, res) => {
+  try {
+    res.json(ROLES_LIST)
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+
+module.exports = { handleLogin, handleLogout, getAllRoles }
