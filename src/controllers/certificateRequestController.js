@@ -12,10 +12,16 @@ const createCertificateRequest = async (req, res) => {
 
 const loadCertificateRequestsFromSpreadSheet = async (req, res) => {
   try {
-    const unprocessedRequests =
-      await spreadsheetService.getUnprocessedCertificateRequests()
+    let spreadsheetRequests = []
+    try {
+      spreadsheetRequests =
+        await spreadsheetService.getUnprocessedCertificateRequests()
+    } catch (error) {
+      //console.log(error)
+      //posible error: network error connection
+    }
 
-    await unprocessedRequests.forEach(async (request) => {
+    await spreadsheetRequests.forEach(async (request) => {
       try {
         await certificateRequestService.createCertificateRequest(request)
       } catch (error) {

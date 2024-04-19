@@ -31,9 +31,9 @@ const handleLogin = async (req, res) => {
     await userService.updateUserByEmail(email, foundUser)
     res.cookie('jwt', refreshToken, {
       httpOnly: true,
-      maxAge: 20 * 60 * 1000, // 20 minutes
+      maxAge: 24 * 60 * 60 * 1000, // 1 day
     })
-    res.json({ accessToken, roles: foundUser.roles })
+    res.json({ accessToken, roles: foundUser.roles, email: foundUser.email })
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
