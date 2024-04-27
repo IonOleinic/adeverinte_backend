@@ -4,13 +4,15 @@ const createStudent = async (req, res) => {
   try {
     let failedStudents = []
     if (Array.isArray(req.body)) {
-      await studentService.deleteAllStudents()
-      for (let i = 0; i < req.body.length; i++) {
+      // array of students
+      // await studentService.deleteAllStudents()
+      const studentsArrayData = req.body
+      for (let i = 0; i < studentsArrayData.length; i++) {
         //try add student
         try {
-          await studentService.createStudent(req.body[i])
+          await studentService.createStudent(studentsArrayData[i])
         } catch (error) {
-          failedStudents.push({ student: req.body[i], message: error.message })
+          failedStudents.push(studentsArrayData[i])
         }
       }
       if (failedStudents.length > 0) {
@@ -20,14 +22,16 @@ const createStudent = async (req, res) => {
       }
       return
     } else {
+      //single student object
+      const studentData = req.body
       //check if student already exists
-      if ((await studentService.getStudentByEmail(req.body.email)) != null) {
+      if ((await studentService.getStudentByEmail(studentData.email)) != null) {
         res.status(409).json({
-          message: `Student with email='${req.body.email}' already exists`,
+          message: `Student with email='${studentData.email}' already exists`,
         })
         return
       }
-      await studentService.createStudent(req.body)
+      await studentService.createStudent(studentData)
       res.sendStatus(201)
     }
   } catch (error) {
@@ -125,6 +129,16 @@ const deleteStudentById = async (req, res) => {
     res.status(500).json({ message: error.message })
   }
 }
+
+const deleteAllStudents = async (req, res) => {
+  try {
+    await studentService.deleteAllStudents()
+    res.status(204).json({ message: 'All students were deleted' })
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+
 const deleteStudentByEmail = async (req, res) => {
   try {
     const deleteResult = await studentService.deleteStudentByEmail(
@@ -153,4 +167,5 @@ module.exports = {
   updateStudentByEmail,
   deleteStudentById,
   deleteStudentByEmail,
+  deleteAllStudents,
 }

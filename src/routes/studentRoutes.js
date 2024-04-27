@@ -13,5 +13,6 @@ studentRoutes.put('/student', studentController.updateStudentByEmail)
 
 studentRoutes.delete('/student/:id', studentController.deleteStudentById)
 studentRoutes.delete('/student', studentController.deleteStudentByEmail)
+studentRoutes.delete('/students', studentController.deleteAllStudents)
 
 module.exports = studentRoutes
