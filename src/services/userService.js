@@ -10,7 +10,11 @@ async function createUser(userData) {
 
 async function getAllUsers() {
   try {
-    return (await User.findAll()).map((user) => user.dataValues)
+    return (
+      await User.findAll({
+        order: [['createdAt', 'DESC']], // Sort by createdAt in descending order
+      })
+    ).map((user) => user.dataValues)
   } catch (error) {
     throw new Error(`Error while retrieving all users: ` + error.message)
   }

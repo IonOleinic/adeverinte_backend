@@ -10,7 +10,11 @@ async function createStudent(studentData) {
 
 async function getAllStudents() {
   try {
-    return (await Student.findAll()).map((student) => student.dataValues)
+    return (
+      await Student.findAll({
+        order: [['createdAt', 'DESC']], // Sort by createdAt in descending order
+      })
+    ).map((student) => student.dataValues)
   } catch (error) {
     throw new Error('Error while retrieving all students: ' + error.message)
   }

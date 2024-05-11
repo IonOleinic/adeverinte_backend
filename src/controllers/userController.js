@@ -68,10 +68,16 @@ const getUserByEmail = async (req, res) => {
 
 const updateUserById = async (req, res) => {
   try {
-    const updateResult = await userService.updateUserById(req.params.id, {
-      ...req.body,
-      password: await bcrypt.hash(req.body.password, 10),
-    })
+    let updateResult = undefined
+    if (req.body.password) {
+      updateResult = await userService.updateUserById(req.params.id, {
+        ...req.body,
+        password: await bcrypt.hash(req.body.password, 10),
+      })
+    } else {
+      updateResult = await userService.updateUserById(req.params.id, req.body)
+    }
+
     if (updateResult && updateResult != 0) {
       res.status(204).json(updateResult)
     } else {
@@ -85,10 +91,19 @@ const updateUserById = async (req, res) => {
 }
 const updateUserByEmail = async (req, res) => {
   try {
-    const updateResult = await userService.updateUserByEmail(req.query.email, {
-      ...req.body,
-      password: await bcrypt.hash(req.body.password, 10),
-    })
+    let updateResult = undefined
+    if (req.body.password) {
+      updateResult = await userService.updateUserByEmail(req.query.email, {
+        ...req.body,
+        password: await bcrypt.hash(req.body.password, 10),
+      })
+    } else {
+      updateResult = await userService.updateUserByEmail(
+        req.query.email,
+        req.body
+      )
+    }
+
     if (updateResult && updateResult != 0) {
       res.status(204).json(updateResult)
     } else {

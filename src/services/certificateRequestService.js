@@ -12,7 +12,11 @@ async function createCertificateRequest(certificateRequestData) {
 
 async function getAllCertificateRequests() {
   try {
-    return (await CertificateRequest.findAll()).map((data) => data.dataValues)
+    return (
+      await CertificateRequest.findAll({
+        order: [['date', 'DESC']], // Sort by createdAt in descending order
+      })
+    ).map((data) => data.dataValues)
   } catch (error) {
     throw new Error(
       'Error while retrieving all certificate requests: ' + error.message

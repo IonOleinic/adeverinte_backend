@@ -28,7 +28,9 @@ async function createCertificate(certificateData) {
 
 async function getAllCertificates() {
   try {
-    return (await Certificate.findAll()).map((data) => data.dataValues)
+    return await Certificate.findAll({
+      order: [['createdAt', 'DESC']], // Sort by createdAt in descending order
+    })
   } catch (error) {
     throw new Error('Error while retrieving all certificates: ' + error.message)
   }

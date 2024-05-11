@@ -17,8 +17,6 @@ async function verifyGoogleToken(idToken) {
       audience: process.env.GOOGLE_CLIENT_ID,
     })
     const payload = ticket.getPayload()
-    console.log(payload)
-    // Here, you can check if the userid exists in your database or create a new user
     return { email: payload.email, profileImage: payload.picture }
   } catch (error) {
     console.error('Error verifying Google token:', error)
