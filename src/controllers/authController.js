@@ -54,7 +54,11 @@ const handleLogin = async (req, res) => {
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 1 day
     })
-    res.json({ accessToken, roles: foundUser.roles, email: foundUser.email })
+    res.json({
+      accessToken,
+      roles: foundUser.roles,
+      email: foundUser.email,
+    })
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
@@ -85,7 +89,11 @@ const handleGoogleLogin = async (req, res) => {
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000, // 1 day
   })
-  res.json({ accessToken, roles: foundUser.roles, email: foundUser.email })
+  res.json({
+    accessToken,
+    roles: foundUser.roles,
+    email: foundUser.email,
+  })
 }
 
 const handleLogout = async (req, res) => {

@@ -1,5 +1,6 @@
 const { Certificate } = require('../../models')
 const studentService = require('./studentService')
+const sequelize = require('sequelize')
 const certificateOptionsService = require('./certificateOptionsService')
 
 async function createCertificate(certificateData) {
@@ -29,7 +30,17 @@ async function createCertificate(certificateData) {
 async function getAllCertificates() {
   try {
     return await Certificate.findAll({
-      order: [['createdAt', 'DESC']], // Sort by createdAt in descending order
+      order: [
+        // Sort by "printed" field in ascending order, with null or false values first
+        [
+          sequelize.literal(
+            'CASE WHEN printed IS NULL OR printed = false THEN 0 ELSE 1 END'
+          ),
+          'ASC',
+        ],
+        // Then, sort by "date" field in descending order
+        ['date', 'DESC'],
+      ],
     })
   } catch (error) {
     throw new Error('Error while retrieving all certificates: ' + error.message)

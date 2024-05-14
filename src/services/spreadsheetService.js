@@ -61,9 +61,7 @@ async function getAllCertificateRequests() {
           const [hour, minute, second] = timePart.split(':')
           rowsToBeMarked.push(row)
           return {
-            date: new Date(
-              Date.UTC(year, month - 1, day, hour, minute, second)
-            ),
+            date: new Date(year, month - 1, day, hour, minute, second),
             studentEmail: row._rawData[1],
             certificatePurpose: row._rawData[2].trim(),
           }

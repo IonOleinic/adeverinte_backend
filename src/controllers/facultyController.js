@@ -27,6 +27,22 @@ const getAllFaculties = async (req, res) => {
   }
 }
 
+const getFacultyByShortName = async (req, res) => {
+  try {
+    const faculty = await facultyService.getFacultyByShortName(
+      req.query['shortName']
+    )
+    if (faculty) {
+      res.json(faculty)
+    } else {
+      res.status(404).json({
+        message: `Faculty with short name ='${req.query['shortName']}' doesn't exist`,
+      })
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
 const getFacultyById = async (req, res) => {
   try {
     const faculty = await facultyService.getFacultyById(req.params.id)
@@ -81,6 +97,7 @@ module.exports = {
   createFaculty,
   getAllFaculties,
   getFacultyById,
+  getFacultyByShortName,
   updateFacultyById,
   deleteFacultyById,
 }

@@ -7,6 +7,8 @@ facultyRoutes.get('/faculties', facultyController.getAllFaculties)
 
 facultyRoutes.get('/faculty/:id', facultyController.getFacultyById)
 
+facultyRoutes.get('/faculty', facultyController.getFacultyByShortName)
+
 facultyRoutes.put('/faculty/:id', facultyController.updateFacultyById)
 
 facultyRoutes.delete('/faculty/:id', facultyController.deleteFacultyById)
