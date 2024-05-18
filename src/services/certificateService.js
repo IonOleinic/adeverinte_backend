@@ -39,7 +39,7 @@ async function getAllCertificates() {
           'ASC',
         ],
         // Then, sort by "date" field in descending order
-        ['date', 'DESC'],
+        ['createdAt', 'DESC'],
       ],
     })
   } catch (error) {
@@ -58,21 +58,6 @@ async function getCertificateByRegistrationNr(registrationNr) {
   } catch (error) {
     throw new Error(
       `Error while retrieving certificate with registrationNr='${registrationNr}': ` +
-        error.message
-    )
-  }
-}
-
-async function getStudentCertificates(studentEmail) {
-  try {
-    return (
-      await Certificate.findAll({
-        where: { studentEmail },
-      })
-    ).map((data) => data.dataValues)
-  } catch (error) {
-    throw new Error(
-      `Error while retrieving certificates for student with email='${studentEmail}'` +
         error.message
     )
   }
@@ -139,7 +124,6 @@ module.exports = {
   createCertificate,
   getAllCertificates,
   getCertificateByRegistrationNr,
-  getStudentCertificates,
   deleteCertificateByRegistrationNr,
   updateCertificateByRegistrationNr,
   deleteAllCertificates,

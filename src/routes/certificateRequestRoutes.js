@@ -7,18 +7,8 @@ certificateRequestRoutes.post(
 )
 
 certificateRequestRoutes.get(
-  '/all-certificate-requests',
-  certificateRequestController.getAllCertificateRequests
-)
-
-certificateRequestRoutes.get(
-  '/pending-certificate-requests',
-  certificateRequestController.getUnprocessedCertificateRequests
-)
-
-certificateRequestRoutes.get(
-  '/processed-certificate-requests',
-  certificateRequestController.getProcessedCertificateRequests
+  '/certificate-requests',
+  certificateRequestController.getCertificateRequests
 )
 
 certificateRequestRoutes.get(
@@ -29,11 +19,6 @@ certificateRequestRoutes.get(
 certificateRequestRoutes.get(
   '/certificate-request/:id',
   certificateRequestController.getCertificateRequestById
-)
-
-certificateRequestRoutes.get(
-  '/student-certificate-requests',
-  certificateRequestController.getCertificateRequestsByStudentEmail
 )
 
 certificateRequestRoutes.put(

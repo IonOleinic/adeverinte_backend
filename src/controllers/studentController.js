@@ -95,6 +95,7 @@ const updateStudentById = async (req, res) => {
     res.status(500).json({ message: error.message })
   }
 }
+
 const updateStudentByEmail = async (req, res) => {
   try {
     const updateResult = await studentService.updateStudentByEmail(

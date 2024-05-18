@@ -11,7 +11,22 @@ const serviceAccountAuth = new JWT({
 })
 const GOOGLE_SPREADSHEET_ID =
   process.env.GOOGLE_SPREADSHEET_ID ||
-  '1gyAbPu4r1SlNF0-Zdd_d3s73RMzQxPCynIHFwJmmBWU'
+  '1_6naKv7NJZ2rez6dyeShVIgghtUBoDc4xjjuSO_NsFk'
+
+const checkSpreadsheet = async (spreadsheet) => {
+  try {
+    const doc = new GoogleSpreadsheet(
+      spreadsheet?.googleSpreadsheetId,
+      serviceAccountAuth
+    )
+    await doc.loadInfo() // Loads document properties and worksheets
+    console.log(`Spreadsheet title: ${doc.title}`)
+    return true
+  } catch (error) {
+    // console.error('Error:', error)
+    return false
+  }
+}
 
 async function loadGooglespreadsheet() {
   try {
@@ -205,6 +220,7 @@ async function updateLastProcessedRow(lastProcessedRow) {
 }
 
 module.exports = {
+  checkSpreadsheet,
   getSpreadsheet,
   updateSpreadsheet,
   getAllCertificateRequests,

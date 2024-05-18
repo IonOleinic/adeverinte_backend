@@ -34,26 +34,13 @@ async function getCertificateRequestById(id) {
     )
   }
 }
+
 async function getCertificateRequestByDate(date) {
   try {
     return (await CertificateRequest.findOne({ where: { date } }))?.dataValues
   } catch (error) {
     throw new Error(
       `Error while retrieving certificate request with date='${date}': ` +
-        error.message
-    )
-  }
-}
-
-async function getCertificateRequestsByStudentEmail(studentEmail) {
-  try {
-    return (await CertificateRequest.findAll({ where: { studentEmail } })).map(
-      (data) => data.dataValues
-    )
-  } catch (error) {
-    console.log(error)
-    throw new Error(
-      `Error while retrieving certificate requests with studentEmail='${studentEmail}': ` +
         error.message
     )
   }
@@ -88,7 +75,6 @@ module.exports = {
   getAllCertificateRequests,
   getCertificateRequestById,
   getCertificateRequestByDate,
-  getCertificateRequestsByStudentEmail,
   updateCertificateRequestById,
   deleteCertificateRequestById,
 }

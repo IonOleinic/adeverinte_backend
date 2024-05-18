@@ -32,9 +32,23 @@ const createCertificate = async (req, res) => {
   }
 }
 
-const getAllCertificates = async (req, res) => {
+const getCertificates = async (req, res) => {
   try {
-    const certificates = await certificateService.getAllCertificates()
+    let certificates = await certificateService.getAllCertificates()
+    if (req.query['start-date'] && req.query['end-date']) {
+      startDate = new Date(req.query['start-date'])
+      startDate.setHours(0, 0, 0, 0)
+      endDate = new Date(req.query['end-date'])
+      endDate.setHours(23, 59, 59, 999)
+      certificates = certificates.filter(
+        (certificate) =>
+          certificate.createdAt >= startDate && certificate.createdAt <= endDate
+      )
+    }
+    if (req.query['student-email'])
+      certificates = certificates.filter(
+        (certificate) => certificate.studentEmail === req.query['student-email']
+      )
     res.json(certificates)
   } catch (error) {
     res.status(500).json({ message: error.message })
@@ -53,26 +67,6 @@ const getCertificateByRegistrationNr = async (req, res) => {
         msg: `Certificate with registrationNr='${req.params.registrationNr}' doesn't exist`,
       })
     }
-  } catch (error) {
-    res.status(500).json({ message: error.message })
-  }
-}
-
-const getStudentCertificates = async (req, res) => {
-  try {
-    //check if student email exists
-    if (
-      (await studentService.getStudentByEmail(req.query.studentEmail)) == null
-    ) {
-      res.status(404).json({
-        msg: `Student with email='${req.query.studentEmail}' doesn't exist`,
-      })
-      return
-    }
-    const certificates = await certificateService.getStudentCertificates(
-      req.query.studentEmail
-    )
-    res.json(certificates)
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
@@ -128,9 +122,8 @@ const deleteAllCertificates = async (req, res) => {
 
 module.exports = {
   createCertificate,
-  getAllCertificates,
+  getCertificates,
   getCertificateByRegistrationNr,
-  getStudentCertificates,
   updateCertificateByRegistrationNr,
   deleteCertificateByRegistrationNr,
   deleteAllCertificates,

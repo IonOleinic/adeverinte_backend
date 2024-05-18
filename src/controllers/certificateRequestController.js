@@ -39,47 +39,39 @@ const loadCertificateRequestsFromSpreadSheet = async (req, res) => {
   }
 }
 
-const getUnprocessedCertificateRequests = async (req, res) => {
+const getCertificateRequests = async (req, res) => {
   try {
-    const certificateRequests =
+    let certificateRequests =
       await certificateRequestService.getAllCertificateRequests()
-    const filteredRequests = certificateRequests.filter(
-      (request) => request.handledBy === null || request.accepted === null
-    )
-    res.json(filteredRequests)
-  } catch (error) {
-    res.status(500).json({ message: error.message })
-  }
-}
-const getProcessedCertificateRequests = async (req, res) => {
-  try {
-    const certificateRequests =
-      await certificateRequestService.getAllCertificateRequests()
-    const filteredRequests = certificateRequests.filter(
-      (request) => request.handledBy != null || request.accepted != null
-    )
-    res.json(filteredRequests)
-  } catch (error) {
-    res.status(500).json({ message: error.message })
-  }
-}
-
-const getAllCertificateRequests = async (req, res) => {
-  try {
-    const certificateRequests =
-      await certificateRequestService.getAllCertificateRequests()
-    res.json(certificateRequests)
-  } catch (error) {
-    res.status(500).json({ message: error.message })
-  }
-}
-
-const getCertificateRequestsByStudentEmail = async (req, res) => {
-  try {
-    const certificateRequests =
-      await certificateRequestService.getCertificateRequestsByStudentEmail(
-        req.query.studentEmail
+    console.log(req.query['processed'])
+    if (req.query['processed'] != undefined) {
+      if (req.query['processed'] == 'false' || req.query['processed'] == false)
+        certificateRequests = certificateRequests.filter(
+          (request) => request.handledBy === null || request.accepted === null
+        )
+      else if (
+        req.query['processed'] == 'true' ||
+        req.query['processed'] == true
       )
+        certificateRequests = certificateRequests.filter(
+          (request) => request.handledBy != null || request.accepted != null
+        )
+    }
+    if (req.query['start-date'] && req.query['end-date']) {
+      startDate = new Date(req.query['start-date'])
+      startDate.setHours(0, 0, 0, 0)
+      endDate = new Date(req.query['end-date'])
+      endDate.setHours(23, 59, 59, 999)
+      certificateRequests = certificateRequests.filter(
+        (request) => request.date >= startDate && request.date <= endDate
+      )
+    }
+
+    if (req.query['student-email'])
+      certificateRequests = certificateRequests.filter(
+        (request) => request.studentEmail === req.query['student-email']
+      )
+
     res.json(certificateRequests)
   } catch (error) {
     res.status(500).json({ message: error.message })
@@ -150,6 +142,12 @@ const getSpreadsheet = async (req, res) => {
 
 const updateSpreadsheet = async (req, res) => {
   try {
+    let isValid = await spreadsheetService.checkSpreadsheet(req.body)
+    if (!isValid) {
+      res.status(400).json({ message: 'Invalid spreadsheet data' })
+      console.log('Invalid spreadsheet data')
+      return
+    }
     await spreadsheetService.updateSpreadsheet(req.body)
     res.sendStatus(204)
   } catch (error) {
@@ -160,12 +158,9 @@ const updateSpreadsheet = async (req, res) => {
 module.exports = {
   createCertificateRequest,
   loadCertificateRequestsFromSpreadSheet,
-  getAllCertificateRequests,
+  getCertificateRequests,
   getCertificateRequestById,
-  getCertificateRequestsByStudentEmail,
   updateCertificateRequestById,
-  getUnprocessedCertificateRequests,
-  getProcessedCertificateRequests,
   deleteCertificateRequestById,
   getSpreadsheet,
   updateSpreadsheet,

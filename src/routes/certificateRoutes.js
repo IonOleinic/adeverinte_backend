@@ -3,11 +3,7 @@ const certificateController = require('../controllers/certificateController')
 
 certificateRoutes.post('/certificate', certificateController.createCertificate)
 
-certificateRoutes.get(
-  '/student-certificates',
-  certificateController.getStudentCertificates
-)
-certificateRoutes.get('/certificates', certificateController.getAllCertificates)
+certificateRoutes.get('/certificates', certificateController.getCertificates)
 
 certificateRoutes.get(
   '/certificate/:registrationNr',
