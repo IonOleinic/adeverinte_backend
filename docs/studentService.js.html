@@ -1,9 +1,37 @@
-const { Student } = require('../../models')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: studentService.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: studentService.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const { Student } = require('../../models')
 
 /**
  * Creates a new student.
  * @param {Object} studentData - The data of the student to create.
- * @returns {Promise<Object>} The created student.
+ * @returns {Promise&lt;Object>} The created student.
  * @throws {Error} If there is an error while creating the student.
  */
 async function createStudent(studentData) {
@@ -16,7 +44,7 @@ async function createStudent(studentData) {
 
 /**
  * Retrieves all students.
- * @returns {Promise<Object[]>} A list of all students.
+ * @returns {Promise&lt;Object[]>} A list of all students.
  * @throws {Error} If there is an error while retrieving all students.
  */
 async function getAllStudents() {
@@ -34,7 +62,7 @@ async function getAllStudents() {
 /**
  * Retrieves a student by email.
  * @param {string} email - The email of the student to retrieve.
- * @returns {Promise<Object|null>} The student with the given email, or null if not found.
+ * @returns {Promise&lt;Object|null>} The student with the given email, or null if not found.
  * @throws {Error} If there is an error while retrieving the student.
  */
 async function getStudentByEmail(email) {
@@ -50,7 +78,7 @@ async function getStudentByEmail(email) {
 /**
  * Retrieves a student by ID.
  * @param {number|string} id - The ID of the student to retrieve.
- * @returns {Promise<Object|null>} The student with the given ID, or null if not found.
+ * @returns {Promise&lt;Object|null>} The student with the given ID, or null if not found.
  * @throws {Error} If there is an error while retrieving the student.
  */
 async function getStudentById(id) {
@@ -68,7 +96,7 @@ async function getStudentById(id) {
  * Updates a student by email.
  * @param {string} email - The email of the student to update.
  * @param {Object} studentData - The new data for the student.
- * @returns {Promise<Array<number, Object[]>>} The result of the update operation.
+ * @returns {Promise&lt;Array&lt;number, Object[]>>} The result of the update operation.
  * @throws {Error} If there is an error while updating the student.
  */
 async function updateStudentByEmail(email, studentData) {
@@ -85,7 +113,7 @@ async function updateStudentByEmail(email, studentData) {
  * Updates a student by ID.
  * @param {number|string} id - The ID of the student to update.
  * @param {Object} studentData - The new data for the student.
- * @returns {Promise<Array<number, Object[]>>} The result of the update operation.
+ * @returns {Promise&lt;Array&lt;number, Object[]>>} The result of the update operation.
  * @throws {Error} If there is an error while updating the student.
  */
 async function updateStudentById(id, studentData) {
@@ -102,7 +130,7 @@ async function updateStudentById(id, studentData) {
 /**
  * Deletes a student by email.
  * @param {string} email - The email of the student to delete.
- * @returns {Promise<number>} The number of rows deleted.
+ * @returns {Promise&lt;number>} The number of rows deleted.
  * @throws {Error} If there is an error while deleting the student.
  */
 async function deleteStudentByEmail(email) {
@@ -118,7 +146,7 @@ async function deleteStudentByEmail(email) {
 /**
  * Deletes a student by ID.
  * @param {number|string} id - The ID of the student to delete.
- * @returns {Promise<number>} The number of rows deleted.
+ * @returns {Promise&lt;number>} The number of rows deleted.
  * @throws {Error} If there is an error while deleting the student.
  */
 async function deleteStudentById(id) {
@@ -133,7 +161,7 @@ async function deleteStudentById(id) {
 
 /**
  * Deletes all students.
- * @returns {Promise<number>} The number of rows deleted.
+ * @returns {Promise&lt;number>} The number of rows deleted.
  * @throws {Error} If there is an error while deleting all students.
  */
 async function deleteAllStudents() {
@@ -155,3 +183,26 @@ module.exports = {
   updateStudentById,
   deleteAllStudents,
 }
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#createStudent">createStudent</a></li><li><a href="global.html#deleteAllStudents">deleteAllStudents</a></li><li><a href="global.html#deleteStudentByEmail">deleteStudentByEmail</a></li><li><a href="global.html#deleteStudentById">deleteStudentById</a></li><li><a href="global.html#getAllStudents">getAllStudents</a></li><li><a href="global.html#getStudentByEmail">getStudentByEmail</a></li><li><a href="global.html#getStudentById">getStudentById</a></li><li><a href="global.html#updateStudentByEmail">updateStudentByEmail</a></li><li><a href="global.html#updateStudentById">updateStudentById</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Thu May 30 2024 22:15:15 GMT+0300 (Ora de vară a Europei de Est)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
