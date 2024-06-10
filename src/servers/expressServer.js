@@ -19,6 +19,7 @@ const facultyRoutes = require('../routes/facultyRoutes')
 const certificateRequestRoutes = require('../routes/certificateRequestRoutes')
 const certificateOptionsRoutes = require('../routes/certificateOptionsRoutes')
 const certificateRoutes = require('../routes/certificateRoutes')
+const reportRoutes = require('../routes/reportRoutes')
 
 expressServer.use(credentials)
 expressServer.use(cors(corsOptions))
@@ -34,6 +35,7 @@ expressServer.use(verifyJWT)
 expressServer.use('/', studentRoutes)
 expressServer.use('/', certificateRoutes)
 expressServer.use('/', certificateRequestRoutes)
+expressServer.use('/', reportRoutes)
 
 //routes only for admin
 // expressServer.use(verifyRoles(ROLES_LIST.Admin))

@@ -35,17 +35,11 @@ const createCertificate = async (req, res) => {
 
 const getCertificates = async (req, res) => {
   try {
-    let certificates = await certificateService.getAllCertificates()
-    if (req.query['start-date'] && req.query['end-date']) {
-      startDate = new Date(req.query['start-date'])
-      startDate.setHours(0, 0, 0, 0)
-      endDate = new Date(req.query['end-date'])
-      endDate.setHours(23, 59, 59, 999)
-      certificates = certificates.filter(
-        (certificate) =>
-          certificate.createdAt >= startDate && certificate.createdAt <= endDate
-      )
-    }
+    let certificates = await certificateService.getCertificatesByDateInterval(
+      req.query['start-date'],
+      req.query['end-date']
+    )
+
     if (req.query['student-email'])
       certificates = certificates.filter(
         (certificate) => certificate.studentEmail === req.query['student-email']

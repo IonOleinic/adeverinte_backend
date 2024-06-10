@@ -34,21 +34,49 @@ async function createCertificate(certificateData) {
 
 async function getAllCertificates() {
   try {
-    return await Certificate.findAll({
-      order: [
-        // Sort by "printed" field in ascending order, with null or false values first
-        [
-          sequelize.literal(
-            'CASE WHEN printed IS NULL OR printed = false THEN 0 ELSE 1 END'
-          ),
-          'ASC',
+    return (
+      await Certificate.findAll({
+        order: [
+          // Sort by "printed" field in ascending order, with null or false values first
+          [
+            sequelize.literal(
+              'CASE WHEN printed IS NULL OR printed = false THEN 0 ELSE 1 END'
+            ),
+            'ASC',
+          ],
+          // Then, sort by "date" field in descending order
+          ['createdAt', 'DESC'],
         ],
-        // Then, sort by "date" field in descending order
-        ['createdAt', 'DESC'],
-      ],
-    })
+      })
+    ).map((certificate) => certificate.dataValues)
   } catch (error) {
     throw new Error('Error while retrieving all certificates: ' + error.message)
+  }
+}
+
+async function getCertificatesByDateInterval(startDate, endDate) {
+  try {
+    let certificates = await getAllCertificates()
+    if (startDate) {
+      startDate = new Date(startDate)
+      startDate.setHours(0, 0, 0, 0)
+      certificates = certificates.filter(
+        (certificate) => certificate.createdAt >= startDate
+      )
+    }
+    if (endDate) {
+      endDate = new Date(endDate)
+      endDate.setHours(23, 59, 59, 999)
+      certificates = certificates.filter(
+        (certificate) => certificate.createdAt <= endDate
+      )
+    }
+    return certificates
+  } catch (error) {
+    throw new Error(
+      `Error while retrieving certificates between ${startDate} and ${endDate}: ` +
+        error.message
+    )
   }
 }
 
@@ -128,6 +156,7 @@ async function generateRegistrationNumber() {
 module.exports = {
   createCertificate,
   getAllCertificates,
+  getCertificatesByDateInterval,
   getCertificateByRegistrationNr,
   deleteCertificateByRegistrationNr,
   updateCertificateByRegistrationNr,

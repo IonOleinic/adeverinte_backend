@@ -24,6 +24,28 @@ async function getAllCertificateRequests() {
   }
 }
 
+async function getRequestsByDateInterval(startDate, endDate) {
+  try {
+    let requests = await getAllCertificateRequests()
+    if (startDate) {
+      startDate = new Date(startDate)
+      startDate.setHours(0, 0, 0, 0)
+      requests = requests.filter((request) => request.date >= startDate)
+    }
+    if (endDate) {
+      endDate = new Date(endDate)
+      endDate.setHours(23, 59, 59, 999)
+      requests = requests.filter((request) => request.date <= endDate)
+    }
+    return requests
+  } catch (error) {
+    throw new Error(
+      `Error while retrieving certificate requests between ${startDate} and ${endDate}: ` +
+        error.message
+    )
+  }
+}
+
 async function getCertificateRequestById(id) {
   try {
     return (await CertificateRequest.findOne({ where: { id } }))?.dataValues
@@ -73,6 +95,7 @@ async function deleteCertificateRequestById(id) {
 module.exports = {
   createCertificateRequest,
   getAllCertificateRequests,
+  getRequestsByDateInterval,
   getCertificateRequestById,
   getCertificateRequestByDate,
   updateCertificateRequestById,
