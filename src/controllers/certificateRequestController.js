@@ -1,10 +1,64 @@
 const certificateRequestService = require('../services/certificateRequestService')
 const spreadsheetService = require('../services/spreadsheetService')
+const emailService = require('../services/emailService')
 
 const createCertificateRequest = async (req, res) => {
   try {
     await certificateRequestService.createCertificateRequest(req.body)
     res.sendStatus(201)
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+
+const acceptCertificateRequest = async (req, res) => {
+  try {
+    req.body.accepted = true
+    const updateResult =
+      await certificateRequestService.updateCertificateRequestById(
+        req.params.id,
+        req.body
+      )
+    if (updateResult && updateResult != 0) {
+      if (req.body.registrationNr)
+        await emailService.sendEmail(
+          req.body.studentEmail,
+          'Cerere adeverinta FIESC',
+          'Cerere adeverinta FIESC',
+          `<p>Buna ziua, solicitarea dumneavoastra cu privire la obtinerea unei adeverinte de student, in cadrul facultatii FIESC, a fost acceptata.</p> <p>Numarul de inregistrare al adeverintei este: ${req.body.registrationNr}.</p> <p>Va rugam sa va apropiati la secretariat incepand cu urmatoarea zi lucratoare pentru a ridica adeverinta.</p> <br/> <p>O zi buna!</p>`
+        )
+      res.sendStatus(204)
+    } else {
+      res.status(404).json({
+        message: `Certificate request with id='${req.params.id}' doesn't exist`,
+      })
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+
+const rejectCertificateRequest = async (req, res) => {
+  try {
+    req.body.accepted = false
+    const updateResult =
+      await certificateRequestService.updateCertificateRequestById(
+        req.params.id,
+        req.body
+      )
+    if (updateResult && updateResult != 0) {
+      await emailService.sendEmail(
+        req.body.studentEmail,
+        'Cerere adeverinta FIESC',
+        'Cerere adeverinta FIESC',
+        `<p>Buna ziua, solicitarea dumneavoastra cu privire la obtinerea unei adeverinte de student, in cadrul facultatii FIESC, a fost <span style="color:red;">respinsa!</span></p> <p>Motivul respingerei este: <b>${req.body.rejectedReason}</b>.</p> <p>Pentru mai multe detalii puteti sa va apropiati la secretariat incepand cu urmatoarea zi lucratoare.</p> <br/> <p>O zi buna!</p>`
+      )
+      res.sendStatus(204)
+    } else {
+      res.status(404).json({
+        message: `Certificate request with id='${req.params.id}' doesn't exist`,
+      })
+    }
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
@@ -157,6 +211,8 @@ const updateSpreadsheet = async (req, res) => {
 
 module.exports = {
   createCertificateRequest,
+  acceptCertificateRequest,
+  rejectCertificateRequest,
   loadCertificateRequestsFromSpreadSheet,
   getCertificateRequests,
   getCertificateRequestById,

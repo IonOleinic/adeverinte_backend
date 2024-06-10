@@ -45,6 +45,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    sex: {
+      // M, F
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     certificatePurpose: {
       type: DataTypes.STRING,
       allowNull: false,

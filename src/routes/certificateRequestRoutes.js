@@ -26,6 +26,16 @@ certificateRequestRoutes.put(
   certificateRequestController.updateCertificateRequestById
 )
 
+certificateRequestRoutes.put(
+  '/accept-certificate-request/:id',
+  certificateRequestController.acceptCertificateRequest
+)
+
+certificateRequestRoutes.put(
+  '/reject-certificate-request/:id',
+  certificateRequestController.rejectCertificateRequest
+)
+
 certificateRequestRoutes.delete(
   '/certificate-request/:id',
   certificateRequestController.deleteCertificateRequestById

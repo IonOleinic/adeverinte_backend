@@ -25,8 +25,9 @@ const createCertificate = async (req, res) => {
       })
       return
     }
-    await certificateService.createCertificate(req.body)
-    res.sendStatus(201)
+    const certificate = await certificateService.createCertificate(req.body)
+    res.status(201).json(certificate)
+    return certificate.registrationNr
   } catch (error) {
     res.status(500).json({ message: error.message })
   }

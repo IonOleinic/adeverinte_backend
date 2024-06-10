@@ -21,7 +21,12 @@ async function createCertificate(certificateData) {
         )
     }
 
-    return await Certificate.create({ ...certificateData, ...student })
+    return await Certificate.create({
+      ...certificateData,
+      ...student,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    })
   } catch (error) {
     throw new Error('Error while creating certificate: ' + error.message)
   }
