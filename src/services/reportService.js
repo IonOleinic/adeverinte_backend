@@ -3,14 +3,9 @@ const certificateService = require('./certificateService')
 const certificateRequestService = require('./certificateRequestService')
 const emailService = require('./emailService')
 
-async function generateCertificatesReport(
-  startDate,
-  endDate,
-  fields,
-  exportedFields
-) {
+async function generateCertificatesReport(startDate, endDate, exportedFields) {
   try {
-    fields = fields || {
+    const fieldNames = {
       registrationNr: 'Nr înregistrare',
       createdAt: 'Data',
       fullName: 'Nume complet',
@@ -79,7 +74,7 @@ async function generateCertificatesReport(
     const periodRow = [`Perioada ${formattedStartDate} - ${formattedEndDate}`]
     const headers = Object.keys(exportedFields)
       .filter((key) => exportedFields[key])
-      .map((key) => fields[key.replace('Checked', '')])
+      .map((key) => fieldNames[key.replace('Checked', '')])
 
     // Adăugarea rândurilor personalizate și a datelor
     const worksheetData = [titleRow, periodRow, headers, ...dataToExport]
@@ -107,14 +102,9 @@ async function generateCertificatesReport(
   }
 }
 
-async function generateRequestsReport(
-  startDate,
-  endDate,
-  fields,
-  exportedFields
-) {
+async function generateRequestsReport(startDate, endDate, exportedFields) {
   try {
-    fields = fields || {
+    const fieldNames = {
       studentEmail: 'Email student',
       date: 'Data',
       accepted: 'Acceptată',
@@ -171,7 +161,7 @@ async function generateRequestsReport(
     const periodRow = [`Perioada ${formattedStartDate} - ${formattedEndDate}`]
     const headers = Object.keys(exportedFields)
       .filter((key) => exportedFields[key])
-      .map((key) => fields[key.replace('Checked', '')])
+      .map((key) => fieldNames[key.replace('Checked', '')])
 
     // Add custom rows and data
     const worksheetData = [titleRow, periodRow, headers, ...dataToExport]
@@ -201,8 +191,33 @@ async function generateRequestsReport(
 
 async function sendDailyCertRepEmail(usersEmails) {
   try {
-    const buffer = await generateCertificatesReport(new Date(), new Date())
-    const date = new Date().toLocaleDateString('ro-RO')
+    const exportedFields = {
+      registrationNr: true,
+      createdAt: true,
+      fullName: true,
+      studyDomain: false,
+      studyProgram: false,
+      educationForm: false,
+      studyCycle: false,
+      studyYear: false,
+      financing: false,
+      certificatePurpose: true,
+    }
+    const now = new Date()
+    const certificates = await certificateService.getCertificatesByDateInterval(
+      now,
+      now
+    )
+    if (certificates.length === 0) {
+      console.log(
+        `No certificates to report for today (${now.toLocaleDateString(
+          'ro-RO'
+        )}). Skipping sendDailyCertRepEmail`
+      )
+      return
+    }
+    const buffer = await generateCertificatesReport(now, now, exportedFields)
+    const date = now.toLocaleDateString('ro-RO')
     for (const email of usersEmails) {
       await emailService.sendReportEmail(
         email,

@@ -5,8 +5,7 @@ const getCertificatesReport = async (req, res) => {
     const reportBuffer = await reportService.generateCertificatesReport(
       req.query['start_date'],
       req.query['end_date'],
-      JSON.parse(req.query.fields),
-      JSON.parse(req.query.exportedFields)
+      JSON.parse(req.query['exported_fields'])
     )
 
     // Setează header-ul pentru descărcare
@@ -31,8 +30,7 @@ const getRequestsReport = async (req, res) => {
     const reportBuffer = await reportService.generateRequestsReport(
       req.query['start_date'],
       req.query['end_date'],
-      JSON.parse(req.query.fields),
-      JSON.parse(req.query.exportedFields)
+      JSON.parse(req.query['exported_fields'])
     )
 
     // Setează header-ul pentru descărcare
