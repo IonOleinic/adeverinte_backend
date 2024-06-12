@@ -1,5 +1,6 @@
-require('dotenv').config() // Import dotenv package to load environment variables
-require('./utils/cronJob') // Import cronJob.js to start the cron job
+require('dotenv').config()
+require('./utils/cronJob')
+const { createSuperUser } = require('./utils/utils')
 const db = require('../database/database')
 const server = require('./servers/expressServer')
 const SERVER_PORT = process.env.SERVER_PORT || 5000
@@ -9,4 +10,5 @@ db.sync().then(async () => {
   server.listen(SERVER_PORT, async () => {
     console.log(`Server listening on port ${SERVER_PORT}...`)
   })
+  createSuperUser()
 })
